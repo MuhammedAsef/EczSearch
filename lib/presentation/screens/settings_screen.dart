@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart'; // << rebirth için
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import '../../core/settings/app_settings.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -15,7 +15,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   bool _isSaving = false;
 
-  // Değişiklik takibi (Kaydet butonunu aktif/pasif yapacağız)
   bool get _hasChanges =>
       _mode != AppSettings.I.themeMode || _lang != AppSettings.I.language;
 
@@ -31,7 +30,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() => _isSaving = true);
 
     try {
-      // Değerleri uygula (SharedPreferences + notifyListeners)
       await AppSettings.I.setTheme(_mode);
       await AppSettings.I.setLanguage(_lang);
 
@@ -40,7 +38,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         SnackBar(content: Text(AppSettings.I.t('save'))),
       );
 
-      // 🔁 Uygulamayı tam taze başlat (Splash'ten yeniden açılır)
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         Phoenix.rebirth(context);
@@ -63,7 +60,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Tema
+          
           Text(
             t('theme'),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -81,12 +78,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 label: Text(t('dark')),
                 icon: const Icon(Icons.dark_mode),
               ),
-              // İstersen sistem temasını da ekleyebilirsin:
-              // ButtonSegment(
-              //   value: ThemeMode.system,
-              //   label: const Text('Sistem'),
-              //   icon: const Icon(Icons.settings_suggest),
-              // ),
+              
             ],
             selected: {_mode},
             onSelectionChanged: (s) => setState(() => _mode = s.first),
@@ -94,7 +86,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           const SizedBox(height: 24),
 
-          // Dil
           Text(
             t('language'),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -119,7 +110,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           const SizedBox(height: 28),
 
-          // Kaydet
           FilledButton.icon(
             onPressed: _hasChanges && !_isSaving ? _save : null,
             icon: _isSaving

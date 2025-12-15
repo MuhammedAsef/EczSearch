@@ -11,7 +11,7 @@ class PharmacyHelper {
       double lat = 0.0;
       double lon = 0.0;
 
-      // 🔧 loc formatı: "39.973773,32.827203"
+      
       if (pharmacy['loc'] != null && pharmacy['loc'].toString().contains(',')) {
         final parts = pharmacy['loc'].toString().split(',');
         if (parts.length == 2) {
@@ -19,12 +19,12 @@ class PharmacyHelper {
           lon = double.tryParse(parts[1].trim()) ?? 0.0;
         }
       } else {
-        // Fallback: bazı durumlarda ayrı alanlar olabilir
+        
         lat = double.tryParse(pharmacy['latitude']?.toString() ?? '') ?? 0.0;
         lon = double.tryParse(pharmacy['longitude']?.toString() ?? '') ?? 0.0;
       }
 
-      // Eğer koordinat geçersizse atla
+      
       if (lat == 0.0 && lon == 0.0) continue;
 
       final distance = Geolocator.distanceBetween(

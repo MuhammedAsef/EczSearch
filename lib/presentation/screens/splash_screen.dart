@@ -1,7 +1,7 @@
 // lib/presentation/screens/splash_screen.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'root_shell.dart'; // 👈 HomeScreen yerine RootShell’e gideceğiz
+import 'root_shell.dart'; 
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -11,28 +11,26 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  bool _exitVisible = true;   // çıkışta fade-out
-  double _entryOpacity = 0.0; // girişte fade-in
+  bool _exitVisible = true; 
+  double _entryOpacity = 0.0; 
 
   @override
   void initState() {
     super.initState();
 
-    // Giriş fade-in'i tetikle (logo + metin)
     Future.delayed(const Duration(milliseconds: 40), () {
       if (mounted) setState(() => _entryOpacity = 1.0);
     });
 
-    // 5 sn sonra çıkış animasyonu ve RootShell’e geçiş
     Timer(const Duration(seconds: 5), () async {
       if (!mounted) return;
-      setState(() => _exitVisible = false); // fade-out
+      setState(() => _exitVisible = false); 
       await Future.delayed(const Duration(milliseconds: 450));
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 350),
-          pageBuilder: (_, __, ___) => const RootShell(), // 👈 burası önemli
+          pageBuilder: (_, __, ___) => const RootShell(), 
           transitionsBuilder: (_, anim, __, child) =>
               FadeTransition(opacity: anim, child: child),
         ),
@@ -47,16 +45,14 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       body: Center(
-        // ÇIKIŞ: tüm içeriği yumuşakça söndür
         child: AnimatedOpacity(
           opacity: _exitVisible ? 1.0 : 0.0,
           duration: const Duration(milliseconds: 450),
           curve: Curves.easeOut,
-          // GİRİŞ: logo zoom-in + fade-in, metin gecikmeli fade-in
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Logo: 0.92 → 1.0 ölçek (zoom-in)
+              
               TweenAnimationBuilder<double>(
                 tween: Tween(begin: 0.92, end: 1.0),
                 duration: const Duration(milliseconds: 900),
@@ -66,12 +62,12 @@ class _SplashScreenState extends State<SplashScreen> {
                   child: child,
                 ),
                 child: AnimatedOpacity(
-                  opacity: _entryOpacity, // girişte fade-in
+                  opacity: _entryOpacity, 
                   duration: const Duration(milliseconds: 700),
                   curve: Curves.easeOut,
                   child: Image.asset(
                     'assets/images/logo.png',
-                    width: 300,   // boyutu buradan ayarlayabilirsin
+                    width: 300, 
                     height: 300,
                     fit: BoxFit.contain,
                   ),
@@ -79,7 +75,6 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               const SizedBox(height: 12),
               AnimatedOpacity(
-                // Metin, logo’dan biraz daha gecikmeli gelsin
                 opacity: _entryOpacity,
                 duration: const Duration(milliseconds: 900),
                 curve: Curves.easeOut,

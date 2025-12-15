@@ -4,7 +4,6 @@ import '../../../core/db/app_database.dart';
 class PharmacyLocalDataSource {
   Future<Database> get _db async => AppDatabase.instance.database;
 
-  /// Şehre/ilçeye göre eczaneleri getirir. Cache 30 dk (varsayılan).
   Future<List<Map<String, dynamic>>> getPharmacies({
     required String city,
     required String district,
@@ -32,7 +31,6 @@ class PharmacyLocalDataSource {
     return rows;
   }
 
-  /// API’den gelen listeyi cache’e yazar (upsert).
   Future<void> savePharmacies(
     List<Map<String, dynamic>> pharmacies, {
     required String city,
@@ -44,7 +42,6 @@ class PharmacyLocalDataSource {
     final now = DateTime.now().millisecondsSinceEpoch;
 
     for (final p in pharmacies) {
-      // CollectAPI’den gelen anahtarları normalize et
       final name = (p['name'] ?? '').toString();
       final phone = (p['phone'] ?? '').toString();
       final address = (p['address'] ?? '').toString();
@@ -73,7 +70,6 @@ class PharmacyLocalDataSource {
       );
     }
 
-    // cache_index güncelle
     batch.insert(
       'cache_index',
       {

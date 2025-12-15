@@ -1,38 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Uygulama dili
+
 enum AppLanguage { tr, en }
 
-/// Tema + Dil + Konum (il/ilçe) ayarları
-/// Singleton + ChangeNotifier: AppSettings.I ile eriş
 class AppSettings extends ChangeNotifier {
   AppSettings._();
   static final AppSettings I = AppSettings._();
 
-  // ---- Tema ----
-  /// Sistem/ışık/koyu (Flutter'ın kendi ThemeMode'u)
   ThemeMode themeMode = ThemeMode.system;
 
-  // ---- Dil/Locale ----
+  
   AppLanguage _language = AppLanguage.tr;
   Locale _locale = const Locale('tr');
 
   AppLanguage get language => _language;
   Locale get locale => _locale;
 
-  // ---- Konum (İl / İlçe) ----
-  String? _city; // İl
-  String? _district; // İlçe
+  
+  String? _city;
+  String? _district;
 
   String? get selectedCity => _city;
   String? get selectedDistrict => _district;
 
-  /// Açılışta çağır (main.dart içinde runApp'tan önce await et)
+  
   Future<void> load() async {
     final sp = await SharedPreferences.getInstance();
 
-    // Dil
     final langCode = sp.getString('lang') ?? 'tr';
     if (langCode == 'en') {
       _language = AppLanguage.en;
@@ -42,7 +37,7 @@ class AppSettings extends ChangeNotifier {
       _locale = const Locale('tr');
     }
 
-    // Tema (system/light/dark)
+    
     final themeStr = sp.getString('theme') ?? 'system';
     switch (themeStr) {
       case 'light':
@@ -55,15 +50,13 @@ class AppSettings extends ChangeNotifier {
         themeMode = ThemeMode.system;
     }
 
-    // Konum (il/ilçe)
+    
     _city = sp.getString('city');
     _district = sp.getString('district');
 
-    // İlk yüklemede de UI güncellensin
     notifyListeners();
   }
 
-  /// Temayı ayarla ve kaydet (system/light/dark)
   Future<void> setTheme(ThemeMode mode) async {
     themeMode = mode;
     final sp = await SharedPreferences.getInstance();
@@ -75,7 +68,7 @@ class AppSettings extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Dili ayarla ve kaydet
+  
   Future<void> setLanguage(AppLanguage lang) async {
     _language = lang;
     _locale = (lang == AppLanguage.en) ? const Locale('en') : const Locale('tr');
@@ -84,7 +77,7 @@ class AppSettings extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Konumu ayarla ve kaydet
+  
   Future<void> setLocation({required String city, required String district}) async {
     _city = city;
     _district = district;
@@ -94,7 +87,7 @@ class AppSettings extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Konumu temizle (opsiyonel)
+  
   Future<void> clearLocation() async {
     _city = null;
     _district = null;
@@ -104,10 +97,10 @@ class AppSettings extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Basit çeviri yardımcı fonksiyonu
+  
   String t(String key) {
     const tr = {
-      // Genel
+      
       'settings': 'Ayarlar',
       'theme': 'Tema',
       'light': 'Açık',
@@ -119,11 +112,11 @@ class AppSettings extends ChangeNotifier {
       'find': 'Bul',
       'dutyPharmacies': 'Nöbetçi Eczaneler',
 
-      // Tabs
+      
       'tabNearby': 'Yakınımdaki',
       'tabSearch': 'Ara',
 
-      // HomeScreen
+      
       'findPharmacyTitle': 'Nöbetçi Eczane Bul',
       'findPharmacySubtitle':
           'İl ve ilçeni seç, sana en yakın nöbetçi eczaneleri bulalım',
@@ -139,7 +132,7 @@ class AppSettings extends ChangeNotifier {
       'listInfo':
           'Liste ekranında sağ üstteki hedef ikonuna basarak en yakın eczaneyi doğrudan haritada açabilirsiniz.',
 
-      // Yakınımdaki sekmesi
+      
       'nearbyTitle': 'Yakınımdaki nöbetçi eczaneler',
       'nearbySubtitle':
           'Konumuna en yakın nöbetçi eczaneler burada listelenir.',
@@ -148,7 +141,7 @@ class AppSettings extends ChangeNotifier {
           'Yakınındaki eczaneler yüklenirken bir hata oluştu.',
       'nearbyRetry': 'Tekrar dene',
 
-      // PharmacyListScreen
+      
       'nearestOpenTooltip': 'En yakın eczaneyi haritada aç',
       'address': 'Adres',
       'phone': 'Telefon',
@@ -167,7 +160,7 @@ class AppSettings extends ChangeNotifier {
     };
 
     const en = {
-      // General
+      
       'settings': 'Settings',
       'theme': 'Theme',
       'light': 'Light',
@@ -179,11 +172,11 @@ class AppSettings extends ChangeNotifier {
       'find': 'Search',
       'dutyPharmacies': 'On-Duty Pharmacies',
 
-      // Tabs
+      
       'tabNearby': 'Nearby',
       'tabSearch': 'Search',
 
-      // HomeScreen
+      
       'findPharmacyTitle': 'Find On-Duty Pharmacy',
       'findPharmacySubtitle':
           'Select your city & district and we’ll find the nearest on-duty pharmacies.',
@@ -199,7 +192,7 @@ class AppSettings extends ChangeNotifier {
       'listInfo':
           'On the list screen, tap the target icon at the top-right to open the nearest pharmacy directly on the map.',
 
-      // Nearby tab
+      
       'nearbyTitle': 'Nearby on-duty pharmacies',
       'nearbySubtitle':
           'On-duty pharmacies closest to your location are listed here.',
@@ -208,7 +201,7 @@ class AppSettings extends ChangeNotifier {
           'An error occurred while loading nearby pharmacies.',
       'nearbyRetry': 'Retry',
 
-      // PharmacyListScreen
+      
       'nearestOpenTooltip': 'Open nearest pharmacy on map',
       'address': 'Address',
       'phone': 'Phone',

@@ -1,4 +1,6 @@
+############################
 # Miscellaneous
+############################
 *.class
 *.log
 *.pyc
@@ -12,34 +14,75 @@
 .swiftpm/
 migrate_working_dir/
 
-# IntelliJ related
+############################
+# IntelliJ / Android Studio
+############################
 *.iml
 *.ipr
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
+############################
+# VS Code (opsiyonel)
+############################
+.vscode/
 
-# Flutter/Dart/Pub related
+############################
+# Flutter / Dart
+############################
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
+.flutter-plugins
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
-/build/
-/coverage/
+build/
+coverage/
 
-# Symbolication related
-app.*.symbols
+############################
+# Android
+############################
+android/app/debug/
+android/app/profile/
+android/app/release/
+android/.gradle/
+android/local.properties
+*.jks
+*.keystore
+key.properties
 
-# Obfuscation related
-app.*.map.json
+############################
+# iOS
+############################
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/Flutter.framework
+ios/Flutter/App.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/engine/
+ios/Flutter/.last_build_id
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+############################
+# Backend / Python / FastAPI
+############################
+venv/
+.env
+.env.*
+__pycache__/
+*.sqlite3
+*.db
+*.pem
+*.key
+
+############################
+# Logs
+############################
+logs/
+*.out
+
+############################
+# OS / Editor
+############################
+Thumbs.db

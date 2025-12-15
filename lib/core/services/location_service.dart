@@ -5,13 +5,11 @@ class LocationService {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // Konum servisi açık mı?
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       throw Exception('Konum servisi kapalı.');
     }
 
-    // İzin durumu kontrolü
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -24,7 +22,6 @@ class LocationService {
       throw Exception('Konum izni kalıcı olarak reddedildi.');
     }
 
-    // Konumu al
     return await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
   }

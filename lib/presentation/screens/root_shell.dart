@@ -15,19 +15,16 @@ class _RootShellState extends State<RootShell> with SingleTickerProviderStateMix
   int _index = 0;
 
   late final AnimationController _c;
-  late Animation<double> _pos; // 0.25 (sol) ↔ 0.75 (sağ)
+  late Animation<double> _pos; 
 
-  // 2 sekme için duraklar
   static const _leftPos = 0.25;
   static const _rightPos = 0.75;
 
-  // Boyut ayarları (düzgün hizalanmış, ince görünüm)
   static const _barHeight = 70.0;     // yeşil bar
   static const _buttonSize = 50.0;    // seçili beyaz buton
   static const _waveDepth = 30.0;     // oyuğun derinliği
   static const _radius = 16.0;        // köşeler
 
-  // Stack yüksekliği: bar + butonun yukarı çıkan yarısı + güvenli pay
   static const _outerHeight = _barHeight + (_buttonSize / 2) + 8;
 
   @override
@@ -70,13 +67,12 @@ class _RootShellState extends State<RootShell> with SingleTickerProviderStateMix
         child: AnimatedBuilder(
           animation: _c,
           builder: (_, __) {
-            final p = _pos.value; // 0..1 dalga merkezi
+            final p = _pos.value; 
             return SizedBox(
               height: _outerHeight,
               child: Stack(
                 alignment: Alignment.bottomCenter,
                 children: [
-                  // Dalgalı yeşil arka plan (tam genişlik)
                   LayoutBuilder(
                     builder: (context, cons) => CustomPaint(
                       size: Size(cons.maxWidth, _barHeight),
@@ -89,7 +85,6 @@ class _RootShellState extends State<RootShell> with SingleTickerProviderStateMix
                     ),
                   ),
 
-                  // Tıklama bölgeleri (pasif ikonlar)
                   Positioned.fill(
                     child: Row(
                       children: [
@@ -113,13 +108,12 @@ class _RootShellState extends State<RootShell> with SingleTickerProviderStateMix
                     ),
                   ),
 
-                  // Seçili beyaz buton (oyukla tam hizalı)
                   Positioned(
                     bottom: _barHeight - (_buttonSize / 2) - (_waveDepth - 20),
                     left: 0,
                     right: 0,
                     child: Align(
-                      alignment: Alignment(p * 2 - 1, 0), // 0.25→-0.5, 0.75→+0.5
+                      alignment: Alignment(p * 2 - 1, 0),
                       child: _RaisedSelectedButton(
                         icon: _index == 0 ? Icons.home_rounded : Icons.settings_rounded,
                         color: green,
@@ -137,12 +131,11 @@ class _RootShellState extends State<RootShell> with SingleTickerProviderStateMix
   }
 }
 
-/// Dalgalı bar: üst kenarda seçili sekmenin altında konkav oyuk
 class _WavyBarPainter extends CustomPainter {
   final Color color;
-  final double pos;       // 0..1 (oyuk merkezi)
-  final double waveDepth; // oyuğun derinliği
-  final double radius;    // köşeler
+  final double pos; 
+  final double waveDepth; 
+  final double radius;    
 
   _WavyBarPainter({
     required this.color,
@@ -158,7 +151,7 @@ class _WavyBarPainter extends CustomPainter {
     final r = radius;
 
     final centerX = w * pos;
-    const notchHalf = 40.0; // oyuğun yatay yayılımı
+    const notchHalf = 40.0;
 
     final leftEdge = (centerX - notchHalf).clamp(r, w - r);
     final rightEdge = (centerX + notchHalf).clamp(r, w - r);
@@ -168,7 +161,6 @@ class _WavyBarPainter extends CustomPainter {
       ..lineTo(0, r)
       ..quadraticBezierTo(0, 0, r, 0)
       ..lineTo(leftEdge, 0)
-      // konkav oyuk (yumuşak S eğrisi)
       ..cubicTo(
         leftEdge + notchHalf * 0.20, 0,
         centerX - notchHalf * 0.36, waveDepth * 0.92,
@@ -198,7 +190,6 @@ class _WavyBarPainter extends CustomPainter {
   }
 }
 
-/// Alt barda pasif ikon (beyaz). Seçili olan için opaklığı düşürüyoruz.
 class _TabTapRegion extends StatelessWidget {
   final VoidCallback onTap;
   final bool selected;
@@ -223,7 +214,7 @@ class _TabTapRegion extends StatelessWidget {
         height: barHeight,
         child: Icon(
           icon,
-          color: Colors.white.withOpacity(selected ? 0 : 1), // seçiliyse gizle
+          color: Colors.white.withOpacity(selected ? 0 : 1),
           size: 26,
         ),
       ),
@@ -231,7 +222,6 @@ class _TabTapRegion extends StatelessWidget {
   }
 }
 
-/// Seçili buton: yükselmiş beyaz daire + yeşil ikon
 class _RaisedSelectedButton extends StatelessWidget {
   final IconData icon;
   final Color color;

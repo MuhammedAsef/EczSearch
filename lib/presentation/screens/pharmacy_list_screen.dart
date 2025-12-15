@@ -153,11 +153,10 @@ class _PharmacyListScreenState extends State<PharmacyListScreen> {
     );
   }
 
-  // <<<<<<<<<<<<<<<<< EKSİK OLAN FONKSİYON (eklendi)
   Future<void> _openInMaps(Map<String, dynamic> p) async {
     await _openMapChooser(p);
   }
-  // >>>>>>>>>>>>>>>>>>
+  
 
   Future<bool> _ensureLocationPermission() async {
     final t = AppSettings.I.t;

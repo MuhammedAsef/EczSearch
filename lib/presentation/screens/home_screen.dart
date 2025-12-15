@@ -1,9 +1,12 @@
 // lib/presentation/screens/home_screen.dart
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:il_ilce/il_ilce.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:geolocator/geolocator.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'pharmacy_list_screen.dart';
 import '../../infrastructure/pharmacy/datasources/collectapi_pharmacy_remote_ds.dart';
@@ -11,6 +14,8 @@ import '../../infrastructure/pharmacy/datasources/pharmacy_local_ds.dart';
 import '../../infrastructure/pharmacy/repositories/pharmacy_repository.dart';
 import '../../core/settings/app_settings.dart';
 import '../../core/services/location_service.dart';
+import '../../core/ads/ad_helper.dart';
+import '../../core/ads/banner_ad_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,14 +29,15 @@ class _HomeScreenState extends State<HomeScreen> {
   late final PharmacyRepository _repo;
 
   bool _isLoading = false;
-  bool _isLoadingNearest = false; // şimdilik sadece _fetchAndNavigate için
+  bool _isLoadingNearest = false;
 
-  // 🔹 Yakınımdaki nöbetçi eczaneler sekmesi için state
   bool _isLoadingNearby = false;
   String? _nearbyError;
   List<Map<String, dynamic>> _nearbyPharmacies = [];
   String? _nearbyCity;
   String? _nearbyDistrict;
+
+  InterstitialAd? _interstitialAd;
 
   @override
   void initState() {
@@ -41,8 +47,63 @@ class _HomeScreenState extends State<HomeScreen> {
       local: PharmacyLocalDataSource(),
     );
 
-    // Uygulama açılır açılmaz yakındaki nöbetçi eczaneleri yükle
     _loadNearbyPharmacies();
+
+    _loadInterstitialAd();
+  }
+
+  void _loadInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: AdHelper.interstitialAdUnitId,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          _interstitialAd = ad;
+        },
+        onAdFailedToLoad: (error) {
+          _interstitialAd = null;
+        },
+      ),
+    );
+  }
+
+
+  Future<void> _showInterstitialIfReady() async {
+    final ad = _interstitialAd;
+
+    
+    if (ad == null) {
+      _loadInterstitialAd();
+      return;
+    }
+
+    final completer = Completer<void>();
+
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (ad) {
+        ad.dispose();
+        _interstitialAd = null;
+        _loadInterstitialAd();
+        if (!completer.isCompleted) completer.complete();
+      },
+      onAdFailedToShowFullScreenContent: (ad, error) {
+        ad.dispose();
+        _interstitialAd = null;
+        _loadInterstitialAd();
+        if (!completer.isCompleted) completer.complete();
+      },
+    );
+
+    ad.show();
+    _interstitialAd = null;
+
+    await completer.future;
+  }
+
+  @override
+  void dispose() {
+    _interstitialAd?.dispose();
+    super.dispose();
   }
 
   Future<bool> _hasConnection() async {
@@ -50,8 +111,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return res != ConnectivityResult.none;
   }
 
-  /// Konuma göre il/ilçe bulur, o bölgedeki nöbetçi eczaneleri getirir,
-  /// mesafeye göre sıralar ve Yakınımdaki sekmesi için state'e yazar.
   Future<void> _loadNearbyPharmacies() async {
     final t = AppSettings.I.t;
     setState(() {
@@ -65,10 +124,9 @@ class _HomeScreenState extends State<HomeScreen> {
         throw Exception(t('noInternetCache'));
       }
 
-      // 1) Konumu al
+      
       final Position pos = await LocationService.getCurrentLocation();
 
-      // 2) Konumdan il / ilçe çöz
       final placemarks = await geo.placemarkFromCoordinates(
         pos.latitude,
         pos.longitude,
@@ -88,7 +146,6 @@ class _HomeScreenState extends State<HomeScreen> {
         throw Exception('Konumdan il/ilçe bilgisi çözümlenemedi.');
       }
 
-      // 3) Bu il/ilçe için nöbetçi eczaneleri çek
       final list = await _repo.getDutyPharmacies(
         city: city,
         district: district,
@@ -98,7 +155,6 @@ class _HomeScreenState extends State<HomeScreen> {
         throw Exception('Konumunuza göre nöbetçi eczane bulunamadı.');
       }
 
-      // 4) Mesafe hesapla ve sırala
       final withDistance = list.map<Map<String, dynamic>>((p) {
         final lat = p['lat'] as double?;
         final lng = p['lng'] as double?;
@@ -109,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
             pos.longitude,
             lat,
             lng,
-          ); // metre
+          ); 
         }
         return {
           ...p,
@@ -145,7 +201,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  /// İl/ilçe seçiminden nöbetçi eczane listesi getirip liste ekranına gider.
   Future<void> _fetchAndNavigate({required bool openNearestHint}) async {
     final String city = _controller.selectedCity.city;
     final String district = _controller.selectedCity.district;
@@ -191,6 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
 
+      
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -198,26 +254,27 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
 
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        if (!mounted) return;
-        await Navigator.of(context).push(
-          MaterialPageRoute(
-            settings: const RouteSettings(name: 'pharmacy_list'),
-            builder: (_) => PharmacyListScreen(
-              city: city.toUpperCase(),
-              district: district.toUpperCase(),
-              pharmacies: list,
-            ),
-          ),
-        );
+      
+      await _showInterstitialIfReady();
+      if (!mounted) return;
 
-        if (openNearestHint && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(t('nearestHint'))),
-          );
-        }
-      });
-      return;
+      
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          settings: const RouteSettings(name: 'pharmacy_list'),
+          builder: (_) => PharmacyListScreen(
+            city: city.toUpperCase(),
+            district: district.toUpperCase(),
+            pharmacies: list,
+          ),
+        ),
+      );
+
+      if (openNearestHint && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(t('nearestHint'))),
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -232,10 +289,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _onSearch() async =>
-      _fetchAndNavigate(openNearestHint: false);
+  Future<void> _onSearch() async => _fetchAndNavigate(openNearestHint: false);
 
-  // 🔹 Sekme 1: Yakınımdaki nöbetçi eczaneler
   Widget _buildNearbyTab(BuildContext context) {
     final t = AppSettings.I.t;
 
@@ -266,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ElevatedButton.icon(
                 onPressed: _isLoadingNearby ? null : _loadNearbyPharmacies,
                 icon: const Icon(Icons.refresh),
-                label: Text(t('nearbyRetry')), // TR: Tekrar dene / EN: Retry
+                label: Text(t('nearbyRetry')),
               ),
               const SizedBox(width: 8),
               if (_nearbyCity != null && _nearbyDistrict != null)
@@ -303,21 +358,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const SizedBox(height: 8),
                             itemBuilder: (_, i) {
                               final p = _nearbyPharmacies[i];
-                              final name =
-                                  (p['name'] ?? 'Eczane').toString();
-                              final addr =
-                                  (p['address'] ?? '').toString();
+                              final name = (p['name'] ?? 'Eczane').toString();
+                              final addr = (p['address'] ?? '').toString();
                               final dist = p['distance'] as double?;
                               String distText = '';
                               if (dist != null) {
                                 if (dist < 1000) {
-                                  distText =
-                                      '${dist.toStringAsFixed(0)} m';
+                                  distText = '${dist.toStringAsFixed(0)} m';
                                 } else {
-                                  distText =
-                                      '${(dist / 1000).toStringAsFixed(1)} km';
+                                  distText = '${(dist / 1000).toStringAsFixed(1)} km';
                                 }
                               }
+
                               return Card(
                                 elevation: 2,
                                 shape: RoundedRectangleBorder(
@@ -326,22 +378,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: ListTile(
                                   title: Text(name),
                                   subtitle: Text(
-                                    distText.isEmpty
-                                        ? addr
-                                        : '$addr\nUzaklık: $distText',
+                                    distText.isEmpty ? addr : '$addr\nUzaklık: $distText',
                                   ),
                                   isThreeLine: true,
-                                  trailing:
-                                      const Icon(Icons.chevron_right),
-                                  onTap: () {
-                                    // Tüm liste ekranına git (bu eczanelerle)
-                                    Navigator.of(context).push(
+                                  trailing: const Icon(Icons.chevron_right),
+                                  onTap: () async {
+                                    await _showInterstitialIfReady();
+                                    if (!context.mounted) return;
+
+                                    await Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (_) =>
-                                            PharmacyListScreen(
+                                        builder: (_) => PharmacyListScreen(
                                           city: _nearbyCity ?? '',
-                                          district:
-                                              _nearbyDistrict ?? '',
+                                          district: _nearbyDistrict ?? '',
                                           pharmacies: _nearbyPharmacies,
                                         ),
                                       ),
@@ -357,7 +406,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // 🔹 Sekme 2: İl / ilçe ile arama (eski ekran)
   Widget _buildSearchTab(BuildContext context) {
     final t = AppSettings.I.t;
     return Padding(
@@ -412,9 +460,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ? const SizedBox(
                             width: 18,
                             height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : Text(t('find')),
                     onPressed: _isLoading ? null : _onSearch,
@@ -459,25 +505,54 @@ class _HomeScreenState extends State<HomeScreen> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          // Uygulama adını sabit bıraktım, istersen t() ile key ekleyip çevirebilirsin
           title: const Text('EczSearch'),
           bottom: TabBar(
             tabs: [
               Tab(
                 icon: const Icon(Icons.my_location),
-                text: t('tabNearby'), // TR: Yakınımdaki / EN: Nearby
+                text: t('tabNearby'),
               ),
               Tab(
                 icon: const Icon(Icons.search),
-                text: t('tabSearch'), // TR: Ara / EN: Search
+                text: t('tabSearch'),
               ),
             ],
           ),
         ),
-        body: TabBarView(
+        body: Column(
           children: [
-            _buildNearbyTab(context),
-            _buildSearchTab(context),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _buildNearbyTab(context),
+                  _buildSearchTab(context),
+                ],
+              ),
+            ),
+
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: const SafeArea(
+                top: false,
+                child: SizedBox(
+                  height: 60,
+                  child: Center(
+                    child: BannerAdWidget(),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

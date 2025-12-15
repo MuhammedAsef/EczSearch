@@ -1,1 +1,0 @@
-const String collectApiKey = 'apikey 56TYCP04MFydPXr38zDjKy:3hhxjcyh2PlsvIFlgLXx2H';

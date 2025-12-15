@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'core/settings/app_settings.dart';
-import 'presentation/screens/splash_screen.dart'; // 👈 SplashScreen'i kullanacağız
+import 'presentation/screens/splash_screen.dart'; 
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await AppSettings.I.load();
+
+  await MobileAds.instance.initialize();
 
   runApp(
     Phoenix(
@@ -59,10 +63,7 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
       ],
 
-      // 👇 Uygulama açılış ekranı
       home: const SplashScreen(),
-      // Eğer direkt ana ekrana gitmek istersen:
-      // home: const RootShell(),
     );
   }
 }
