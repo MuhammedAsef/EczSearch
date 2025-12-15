@@ -13,9 +13,8 @@ Uygulama, performans ve güvenlik amacıyla **özel bir backend servis** üzerin
 - **İl / ilçe bazlı arama**
 - Eczane adres ve telefon bilgileri
 - Yakındaki eczaneler için mesafe hesaplama
-- Güvenli backend mimarisi (API anahtarı gizli)
+- Güvenli backend mimarisi
 - Modern ve sade Flutter arayüzü
-- Google AdMob reklam entegrasyonu
 
 ---
 
@@ -31,6 +30,38 @@ Uygulama, performans ve güvenlik amacıyla **özel bir backend servis** üzerin
 - Nginx Reverse Proxy
 - HTTPS (Let’s Encrypt SSL)
 - VPS üzerinde 7/24 çalışan servis
+
+
+---
+
+###  Güvenlik
+- API anahtarları mobil uygulamada tutulmaz. Tüm istekler HTTPS üzerinden backend aracılığıyla yapılır.
+
+---
+
+###  Canlı Servis
+
+**https://eczsearch.xyz/api/duty-pharmacies**
+
+---
+
+##  Geliştirici
+
+**Muhammed Asef Kumandaveren**  
+GitHub: https://github.com/MuhammedAsef
+
+---
+
+
+
+
+
+
+
+
+
+
+
 
 
 
