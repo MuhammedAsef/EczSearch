@@ -12,7 +12,7 @@ EczSearch, kullanıcıların bulundukları konuma veya seçtikleri il/ilçeye g�
 - Yeni bir şehirde bulunan kişiler
 
 - Gece saatlerinde açık eczane bulmak isteyen herkes
-- 
+
 ---
 
 ### Hangi Problemi Çözer?
@@ -82,6 +82,7 @@ EczSearch, kullanıcıların bulundukları konuma veya seçtikleri il/ilçeye g�
 ```bash
 flutter pub get
 flutter run
+
 
 
 
