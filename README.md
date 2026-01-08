@@ -1,6 +1,7 @@
 # EczSearch – Nöbetçi Eczane Bulma Uygulaması
-## Projenin Amacı
 
+
+## Projenin Amacı ##
 EczSearch, kullanıcıların bulundukları konuma veya seçtikleri il/ilçeye göre güncel nöbetçi eczaneleri hızlı ve kolay şekilde bulmalarını sağlayan bir mobil uygulamadır. Özellikle acil durumlarda zaman kaybını önlemeyi amaçlar.
 ---
 
@@ -81,6 +82,7 @@ EczSearch, kullanıcıların bulundukları konuma veya seçtikleri il/ilçeye g�
 ```bash
 flutter pub get
 flutter run
+
 
 
 
