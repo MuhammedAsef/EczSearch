@@ -61,3 +61,5 @@ EczSearch, kullanıcıların bulundukları konuma veya seçtikleri il/ilçeye g�
 
 - QR kod ile paylaşım popup’ı
 
+- Ayarlar ekranı
+
