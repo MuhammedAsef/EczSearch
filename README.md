@@ -74,7 +74,7 @@ EczSearch, kullanıcıların bulundukları konuma veya seçtikleri il/ilçeye g�
 ```bash
 flutter pub get
 flutter run
----
+
 
 
 
