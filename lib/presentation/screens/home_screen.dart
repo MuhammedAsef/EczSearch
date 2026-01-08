@@ -2,11 +2,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:il_ilce/il_ilce.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import 'pharmacy_list_screen.dart';
 import '../../infrastructure/pharmacy/datasources/collectapi_pharmacy_remote_ds.dart';
@@ -39,6 +41,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   InterstitialAd? _interstitialAd;
 
+  static const String _appLink =
+      'https://play.google.com/store/apps/details?id=com.muhammed.eczsearch';
+
   @override
   void initState() {
     super.initState();
@@ -48,7 +53,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     _loadNearbyPharmacies();
-
     _loadInterstitialAd();
   }
 
@@ -67,11 +71,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
   Future<void> _showInterstitialIfReady() async {
     final ad = _interstitialAd;
 
-    
     if (ad == null) {
       _loadInterstitialAd();
       return;
@@ -100,6 +102,96 @@ class _HomeScreenState extends State<HomeScreen> {
     await completer.future;
   }
 
+  void _showQrPopup() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Uygulamayı Paylaş',
+                  style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+                const SizedBox(height: 12),
+
+                // Kesin boyut veriyoruz -> RenderBox hatalarını bitirir
+                Center(
+                  child: SizedBox(
+                    width: 240,
+                    height: 240,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: QrImageView(
+                          data: _appLink,
+                          version: QrVersions.auto,
+                          gapless: false,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+                const Text(
+                  'QR kodu okutarak uygulamayı indirebilirsiniz.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: SelectableText(
+                        _appLink,
+                        style: Theme.of(ctx).textTheme.bodySmall,
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Kopyala',
+                      onPressed: () async {
+                        await Clipboard.setData(
+                          const ClipboardData(text: _appLink),
+                        );
+                        if (!ctx.mounted) return;
+                        ScaffoldMessenger.of(ctx).showSnackBar(
+                          const SnackBar(content: Text('Link kopyalandı')),
+                        );
+                      },
+                      icon: const Icon(Icons.copy),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: const Text('Kapat'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     _interstitialAd?.dispose();
@@ -124,7 +216,6 @@ class _HomeScreenState extends State<HomeScreen> {
         throw Exception(t('noInternetCache'));
       }
 
-      
       final Position pos = await LocationService.getCurrentLocation();
 
       final placemarks = await geo.placemarkFromCoordinates(
@@ -165,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
             pos.longitude,
             lat,
             lng,
-          ); 
+          );
         }
         return {
           ...p,
@@ -246,7 +337,6 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
 
-      
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -254,11 +344,9 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
 
-      
       await _showInterstitialIfReady();
       if (!mounted) return;
 
-      
       await Navigator.of(context).push(
         MaterialPageRoute(
           settings: const RouteSettings(name: 'pharmacy_list'),
@@ -366,7 +454,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 if (dist < 1000) {
                                   distText = '${dist.toStringAsFixed(0)} m';
                                 } else {
-                                  distText = '${(dist / 1000).toStringAsFixed(1)} km';
+                                  distText =
+                                      '${(dist / 1000).toStringAsFixed(1)} km';
                                 }
                               }
 
@@ -378,7 +467,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: ListTile(
                                   title: Text(name),
                                   subtitle: Text(
-                                    distText.isEmpty ? addr : '$addr\nUzaklık: $distText',
+                                    distText.isEmpty
+                                        ? addr
+                                        : '$addr\nUzaklık: $distText',
                                   ),
                                   isThreeLine: true,
                                   trailing: const Icon(Icons.chevron_right),
@@ -506,6 +597,13 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('EczSearch'),
+          actions: [
+            IconButton(
+              tooltip: 'QR Kod',
+              onPressed: _showQrPopup,
+              icon: const Icon(Icons.qr_code_2),
+            ),
+          ],
           bottom: TabBar(
             tabs: [
               Tab(
@@ -529,7 +627,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
