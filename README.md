@@ -64,8 +64,9 @@ EczSearch, kullanıcıların bulundukları konuma veya seçtikleri il/ilçeye g�
 - Ayarlar ekranı
 
 
-# Google Play Store Link'i
+## Google Play Store Link'i
 [Google Play Store](https://play.google.com/store/apps/details?id=com.muhammed.eczsearch)
+
 
 
 
