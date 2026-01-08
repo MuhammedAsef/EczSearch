@@ -67,6 +67,14 @@ EczSearch, kullanıcıların bulundukları konuma veya seçtikleri il/ilçeye g�
 ## Google Play Store Link'i
 [Google Play Store](https://play.google.com/store/apps/details?id=com.muhammed.eczsearch)
 
+## Youtube Video Link'i
+
+
+##  Kurulum
+```bash
+flutter pub get
+flutter run
+---
 
 
 
