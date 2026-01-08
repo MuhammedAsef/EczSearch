@@ -1,67 +1,62 @@
-#  EczSearch – Nöbetçi Eczane Bulma Uygulaması
+# EczSearch – Nöbetçi Eczane Bulma Uygulaması
+## Projenin Amacı
 
-EczSearch, Türkiye genelinde **nöbetçi eczaneleri** hızlı ve güvenilir şekilde bulmanızı sağlayan mobil bir uygulamadır.  
-Kullanıcılar il/ilçe bazlı arama yapabilir veya **konumlarına en yakın nöbetçi eczaneleri** anında görüntüleyebilir.
+EczSearch, kullanıcıların bulundukları konuma veya seçtikleri il/ilçeye göre güncel nöbetçi eczaneleri hızlı ve kolay şekilde bulmalarını sağlayan bir mobil uygulamadır. Özellikle acil durumlarda zaman kaybını önlemeyi amaçlar.
 
-Uygulama, performans ve güvenlik amacıyla **özel bir backend servis** üzerinden çalışır.
+### *** Bu Uygulama Kimin İşine Yarar? ***
 
----
+- Acil durumda nöbetçi eczane arayan kullanıcılar
 
-##  Özellikler
+- Yeni bir şehirde bulunan kişiler
 
-- **Konuma göre nöbetçi eczane bulma**
-- **İl / ilçe bazlı arama**
-- Eczane adres ve telefon bilgileri
-- Yakındaki eczaneler için mesafe hesaplama
-- Güvenli backend mimarisi
-- Modern ve sade Flutter arayüzü
+- Gece saatlerinde açık eczane bulmak isteyen herkes
 
----
+### *** Hangi Problemi Çözer? ***
 
-##  Mimari Yapı
+- Dağınık ve güncel olmayan nöbetçi eczane bilgisi sorununu çözer
 
-### Mobil Uygulama
-- **Flutter**
-- Clean Architecture yaklaşımı
-- Repository & DataSource katmanları
+- Konuma en yakın eczaneyi otomatik sıralar
 
-### Backend
-- **FastAPI (Python)**
-- Nginx Reverse Proxy
-- HTTPS (Let’s Encrypt SSL)
-- VPS üzerinde 7/24 çalışan servis
+- Manuel arama ihtiyacını azaltır
 
+### *** Nerede ve Nasıl Kullanılır? ***
 
----
+- Android cihazlarda kullanılır
 
-###  Güvenlik
-- API anahtarları mobil uygulamada tutulmaz. Tüm istekler HTTPS üzerinden backend aracılığıyla yapılır.
+- Konum izni verilirse yakındaki nöbetçi eczaneler otomatik listelenir
 
----
+- İstenirse il / ilçe seçilerek manuel arama yapılabilir
 
-###  Canlı Servis
+### *** Kullanılan Teknolojiler ***
 
-**https://eczsearch.xyz/api/duty-pharmacies**
+- Flutter / Dart
 
----
+- SQLite (yerel veritabanı – cache amaçlı)
 
-##  Geliştirici
+- REST API
 
-**Muhammed Asef Kumandaveren**  
-GitHub: https://github.com/MuhammedAsef
+- Google Mobile Ads
 
----
+- Geolocator & Geocoding
 
+### *** Veritabanı Kullanımı ***
 
+- Uygulama SQLite veritabanı kullanmaktadır.
 
+*Kullanım amaçları:*
 
+  - Daha önce alınan eczane verilerini saklamak
 
+  - İnternet yokken cache üzerinden veri göstermek
 
+### *** Uygulama Ekranları ***
 
+- Ana ekran
 
+- Yakındaki nöbetçi eczaneler
 
+- İl / ilçe ile arama
 
+- Listeleme ekranı
 
-
-
-
+- QR kod ile paylaşım popup’ı
