@@ -43,11 +43,11 @@ EczSearch, kullanıcıların bulundukları konuma veya seçtikleri il/ilçeye g�
 
 - Uygulama SQLite veritabanı kullanmaktadır.
 
-*Kullanım amaçları:*
+  *Kullanım amaçları:*
 
-  - Daha önce alınan eczane verilerini saklamak
+    - Daha önce alınan eczane verilerini saklamak
 
-  - İnternet yokken cache üzerinden veri göstermek
+    - İnternet yokken cache üzerinden veri göstermek
 
 ### Uygulama Ekranları
 
@@ -60,3 +60,4 @@ EczSearch, kullanıcıların bulundukları konuma veya seçtikleri il/ilçeye g�
 - Listeleme ekranı
 
 - QR kod ile paylaşım popup’ı
+
