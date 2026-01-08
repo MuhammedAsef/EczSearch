@@ -3,7 +3,7 @@
 
 EczSearch, kullanıcıların bulundukları konuma veya seçtikleri il/ilçeye göre güncel nöbetçi eczaneleri hızlı ve kolay şekilde bulmalarını sağlayan bir mobil uygulamadır. Özellikle acil durumlarda zaman kaybını önlemeyi amaçlar.
 
-### *** Bu Uygulama Kimin İşine Yarar? ***
+*** ###  Bu Uygulama Kimin İşine Yarar? ***
 
 - Acil durumda nöbetçi eczane arayan kullanıcılar
 
@@ -60,3 +60,4 @@ EczSearch, kullanıcıların bulundukları konuma veya seçtikleri il/ilçeye g�
 - Listeleme ekranı
 
 - QR kod ile paylaşım popup’ı
+
