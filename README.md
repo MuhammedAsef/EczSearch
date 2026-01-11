@@ -61,7 +61,7 @@ EczSearch, kullanıcıların bulundukları konuma veya seçtikleri il/ilçeye g�
 ---
 
 ##  YouTube Tanıtım Videosu
- Video linki eklenecektir.
+ [Youtube Video linki.](https://youtu.be/fOmeM8RoSps?si=ZAZEnvqbmXONKN7C)
 
 ---
 
@@ -69,3 +69,4 @@ EczSearch, kullanıcıların bulundukları konuma veya seçtikleri il/ilçeye g�
 ```bash
 flutter pub get
 flutter run
+
